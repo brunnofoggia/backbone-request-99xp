@@ -9,12 +9,16 @@ var exec = function (options, req = null, res = null) {
         return false;
     }
 
-    var reqOpts = _.defaults(_.pick(options, 'url', 'method', 'headers', 'data', 'timeout'), {
+    var defaults = _.defaults({
         method: 'GET',
         rejectUnauthorized: false,
-        headers: {},
+        headers: {
+            'content-type': 'application/json'
+        },
         timeout: 18000000
     }, !options.url ? {} : _.parseUrl(options.url));
+
+    var reqOpts = _.defaults2(_.pick(options, 'url', 'method', 'headers', 'data', 'timeout'), defaults);
 
     // default promise calls
     (typeof options.then !== 'function') && (options.then = (response, data, _req, _res) => {
@@ -48,6 +52,9 @@ var exec = function (options, req = null, res = null) {
     }
 
     if (reqOpts.method !== 'GET' && reqOpts.data) {
+        if(_.isJSON(reqOpts.data)) {
+            reqOpts.data = JSON.stringify(reqOpts.data);
+        }
         reqOpts.headers['Content-Length'] = Buffer.byteLength(reqOpts.data);
     }
 
