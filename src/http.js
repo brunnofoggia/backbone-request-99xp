@@ -52,7 +52,7 @@ var exec = function (options, req = null, res = null) {
     }
 
     if (reqOpts.method !== 'GET' && reqOpts.data) {
-        if(_.isJSON(reqOpts.data)) {
+        if (_.isJSON(reqOpts.data)) {
             reqOpts.data = JSON.stringify(reqOpts.data);
         }
         reqOpts.headers['Content-Length'] = Buffer.byteLength(reqOpts.data);
@@ -107,8 +107,7 @@ var exec = function (options, req = null, res = null) {
 
         r.end();
 
-    }, reqOpts)).catch((e) => {
-    });
+    }, reqOpts));
 
 };
 
