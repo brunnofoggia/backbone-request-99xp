@@ -51,6 +51,7 @@
 // --------------
 import Backbone from 'backbone';
 import _ from 'underscore-99xp';
+import AppException from 'app-exception';
 import http from './http';
 
 var BackboneRequest = _.extend(_.clone(Backbone), _.clone(http));
@@ -161,7 +162,7 @@ var methodMap = {
 
 // Throw an error when a URL is needed, and none is supplied.
 BackboneRequest.urlError = function () {
-    throw new Error('A "url" property or function must be specified');
+    throw AppException.internalServerError('A "url" property or function must be specified');
 };
 
 

@@ -1,6 +1,6 @@
 {
   "name": "backbone-request-99xp",
-  "version": "1.2.1",
+  "version": "1.3.0-beta",
   "keywords": [
     "util",
     "functional",
@@ -55,6 +55,7 @@
     "terser": "^4.6.11"
   },
   "dependencies": {
+    "app-exception": "^1.0.0-2",
     "backbone": "^1.4.0",
     "underscore-99xp": "^1.2.2",
     "v8n-99xp": "^1.0.1"

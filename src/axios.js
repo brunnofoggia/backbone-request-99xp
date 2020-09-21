@@ -1,4 +1,5 @@
 import _ from 'underscore-99xp';
+import AppException from 'app-exception';
 
 var exec = function(options, req = null, res = null) {
     if (typeof options.url !== 'string' ||
@@ -14,7 +15,7 @@ var exec = function(options, req = null, res = null) {
 
     // default promise calls
     (typeof options.then !== 'function') && (options.then = (response, _req, _res) => {
-        _res.status(response.status).send(response.data);
+        throw new AppException(JSON.stringify(response.data), 0, response.status || 200);
     });
     (typeof options.finally !== 'function') && (options.finally = () => {});
     (typeof options.catch !== 'function') && (options.catch = (error, _req, _res) => {
@@ -30,11 +31,9 @@ var exec = function(options, req = null, res = null) {
                 }
             }
 
-            _res.status(error.response.status).send(JSON.stringify(data));
+            throw new AppException(JSON.stringify(data), 0, error?.response?.status || 500);
         } catch (e) {
-            _res.status(500).send(JSON.stringify({
-                message: 'Internal Failure'
-            }));
+            throw AppException.internalServerError(e);
         }
     });
 

@@ -1,6 +1,7 @@
 import _ from 'underscore-99xp';
 import https from 'https';
 import http from 'http';
+import AppException from 'app-exception';
 
 var exec = function (options, req = null, res = null) {
     if (typeof options.url !== 'string' ||
@@ -22,7 +23,7 @@ var exec = function (options, req = null, res = null) {
 
     // default promise calls
     (typeof options.then !== 'function') && (options.then = (response, data, _req, _res) => {
-        _res.status(response.statusCode).send(data);
+        throw new AppException(JSON.stringify(data), 0, response.statusCode || 200);
     });
     (typeof options.finally !== 'function') && (options.finally = () => {
     });
@@ -39,11 +40,9 @@ var exec = function (options, req = null, res = null) {
             }
 
             var status = _.isObject(response) ? response.statusCode || 500 : 500;
-            _res.status(status).send(JSON.stringify(data));
+            throw new AppException(JSON.stringify(data), 0, status);
         } catch (e) {
-            _res.status(500).send(JSON.stringify({
-                message: 'Internal Failure'
-            }));
+            throw AppException.internalServerError(e);
         }
     });
 
