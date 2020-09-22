@@ -50,8 +50,9 @@
 // Baseline setup
 // --------------
 import Backbone from 'backbone';
-import _ from 'underscore-99xp';
 import AppException from 'app-exception';
+import bbx from 'backbone-99xp';
+import _ from 'underscore-99xp';
 import http from './http';
 
 var BackboneRequest = _.extend(_.clone(Backbone), _.clone(http));
@@ -204,7 +205,7 @@ var ext = {
         },
     }
 };
-_.map(['Model', 'Collection'], (x) => BackboneRequest[x] = Backbone[x].extend(ext[x]));
+_.map(['Model', 'Collection'], (x) => BackboneRequest[x] = bbx[x.toLowerCase()].extend(ext[x]));
 
 
 export default BackboneRequest;

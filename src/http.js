@@ -66,15 +66,13 @@ var exec = function (options, req = null, res = null) {
             resp.on('data', chunk => {
                 var data = parseBuffer(Buffer.concat([chunk]).toString());
                 if (/^2\d{2}/.test(resp.statusCode.toString())) {
-                    options.then(resp, data, req, res, options);
-                    resolve();
+                    resolve({resp, data, req, res, options});
                 } else {
-                    options.catch(resp, data, options, {
-                        data,
-                        status: resp.statusCode,
-                        response: resp
-                    });
-                    reject(data, resp);
+                    reject({resp, data, options, output: {
+                      data,
+                      status: resp.statusCode,
+                      response: resp
+                    }});
                 }
             });
 
@@ -89,9 +87,11 @@ var exec = function (options, req = null, res = null) {
             } catch (e) {
                 message = error;
             }
-            options.catch(r, message, req, res, options);
-
-            reject(message, r);
+            reject({resp: r, message, options, output: {
+                data: message,
+                status: 500,
+                response: r
+            }});
         });
 
         r.on('timeout', () => {
@@ -106,7 +106,11 @@ var exec = function (options, req = null, res = null) {
 
         r.end();
 
-    }, reqOpts));
+    }, reqOpts)).then((o)=>{
+        o.options.then(o.resp, o.data, o.req, o.res, o.options);
+    }).catch((o)=>{
+        o.options.catch(o.resp, o.data, o.options, o.output);
+    });
 
 };
 
