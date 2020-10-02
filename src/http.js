@@ -1,3 +1,5 @@
+// current version commented
+
 import _ from 'underscore-99xp';
 import https from 'https';
 import http from 'http';
@@ -58,27 +60,28 @@ var exec = function (options, req = null, res = null) {
     }
 
     return new Promise(_.partial((_o, resolve, reject) => {
-
         const httprequest = defineLib(_o);
+
         const r = httprequest.request(_.omit(_o, 'data'), resp => {
+            let chunks = [];
+            resp.setEncoding('utf8');
+            resp.on('data', chunk => { chunks.push(chunk);
+            });
+
             /*resp.setEncoding('utf8');*/
 
-            resp.on('data', chunk => {
-                var data = parseBuffer(Buffer.concat([chunk]).toString());
-                if (/^2\d{2}/.test(resp.statusCode.toString())) {
+            resp.on('end', () => {
+                try {
+                    var rawData = (chunks[0] instanceof Buffer) || (chunks[0] instanceof Uint8Array) ? Buffer.concat(chunks) : chunks.join('');
+                    var data = rawData ? JSON.parse(rawData) : '';
                     resolve({resp, data, req, res, options});
-                } else {
-                    reject({resp, data, options, output: {
-                      data,
-                      status: resp.statusCode,
-                      response: resp
+                } catch (e) {
+                    reject({resp: resp, options, output: {
+                        data: e.message,
+                        status: 500
                     }});
                 }
             });
-
-            /*resp.on('end', error => {
-             _.partial((_req, _res, o, err, xhr) => options.catch(err, _req, _res, xhr), req, res, options)(error, r);
-             });*/
         });
         r.on('error', error => {
             var message;
