@@ -74,9 +74,13 @@ var exec = function (options, req = null, res = null) {
                 try {
                     var rawData = (chunks[0] instanceof Buffer) || (chunks[0] instanceof Uint8Array) ? Buffer.concat(chunks) : chunks.join('');
                     var data = rawData ? JSON.parse(rawData) : '';
-                    resolve({resp, data, req, res, options});
+                    if(resp.statusCode<400) {
+                        resolve({resp, data, req, res, options});
+                    } else {
+                        reject({resp, data, req, res, options});
+                    }
                 } catch (e) {
-                    reject({resp: resp, options, output: {
+                    reject({resp, options, output: {
                         data: e.message,
                         status: 500
                     }});
