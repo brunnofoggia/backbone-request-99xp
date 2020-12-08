@@ -6,6 +6,9 @@ import v8n from 'v8n-99xp';
 var Model = bbr.Model.extend({
     urlRoot: 'https://tapi.99xp.org/crud/test'
 });
+var FalseModel = bbr.Model.extend({
+    urlRoot: 'https://tapi.99xp.org/xxx'
+});
 var id = null;
 
 it('create row', () => {
@@ -64,6 +67,22 @@ it('change row', () => {
         });
 */
     });
+});
+
+
+it('false url', () => {
+    expect.assertions(1);
+
+    var falseModel = new FalseModel({
+            id: id
+        });
+
+
+    return falseModel.fetchp((m, o) => {
+        expect(false).toBe(true);
+    }, {error: (model, response, error) => {
+        expect(true).toBe(true);
+    }});
 });
 
 // // implementar promise pra delete
